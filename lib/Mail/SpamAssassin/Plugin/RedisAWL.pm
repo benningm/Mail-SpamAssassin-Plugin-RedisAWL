@@ -5,6 +5,9 @@ use Mail::SpamAssassin::Logger;
 use strict;
 use warnings;
 
+# ABSTRACT: redis support for spamassassin AWL/TxRep
+# VERSION
+
 use vars qw(@ISA);
 @ISA = qw(Mail::SpamAssassin::Plugin);
 
