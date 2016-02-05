@@ -31,7 +31,7 @@ sub new_checker {
   my ($factory, $main) = @_;
   my $class = $factory->{class};
   my $conf = $main->{conf};
-  my $redis_server = $conf->{auto_whitelist_redis_server};
+  my $prefix = $conf->{auto_whitelist_redis_prefix};
   my $redis_server = $conf->{auto_whitelist_redis_server};
   my $password = $conf->{auto_whitelist_redis_password};
   my $database = $conf->{auto_whitelist_redis_database};
