@@ -27,9 +27,13 @@ Load the plugin in init.pre:
 
   loadplugin Mail::SpamAssassin::Plugin::RedisAWL
 
-Change the datebase type to redis in local.cf:
+If you're using the AWL plugin change the AWL datebase type to redis in local.cf:
 
   auto_whitelist_factory Mail::SpamAssassin::RedisAddrList
+
+If you're using the TxRep plugin use:
+
+  txrep_factory Mail::SpamAssassin::RedisAddrList
 
 And you may have to configure the redis server and prefix:
 
@@ -44,11 +48,25 @@ The redis server to use.
 
 Default: 127.0.0.1:6379
 
+=head2 auto_whitelist_redis_password (default: no password)
+
+Set if you redis server requires a password.
+
 =head2 auto_whitelist_redis_prefix
 
 A prefix for AWL keys.
 
 Default: awl_
+
+=head2 auto_whitelist_redis_database (default: 0)
+
+Will call SELECT to switch database after connect if set to a non-zero value.
+
+Database 0 is the default in redis.
+
+=head2 timing_redis_debug (default: 0)
+
+Turn on/off debug on the Redis connection.
 
 =head1 CHECK YOUR CONFIGURATION
 
@@ -81,10 +99,26 @@ sub new {
             setting => 'auto_whitelist_redis_server',
             type => $Mail::SpamAssassin::Conf::CONF_TYPE_STRING,
             default => '127.0.0.1:6379',
+            is_admin => 1,
         }, {
             setting => 'auto_whitelist_redis_prefix',
             type => $Mail::SpamAssassin::Conf::CONF_TYPE_STRING,
             default => 'awl_',
+            is_admin => 1,
+        }, {
+            setting => 'auto_whitelist_redis_password',
+            is_admin => 1,
+            type => $Mail::SpamAssassin::Conf::CONF_TYPE_STRING,
+        }, {
+            setting => 'auto_whitelist_redis_database',
+            is_admin => 1,
+            type => $Mail::SpamAssassin::Conf::CONF_TYPE_NUMERIC,
+            default => 0,
+        }, {
+            setting => 'auto_whitelist_redis_debug',
+            is_admin => 1,
+            type => $Mail::SpamAssassin::Conf::CONF_TYPE_BOOL,
+            default => 0,
         },
     ] );
 

@@ -32,16 +32,35 @@ sub new_checker {
   my $class = $factory->{class};
   my $conf = $main->{conf};
   my $redis_server = $conf->{auto_whitelist_redis_server};
-  my $prefix = $conf->{auto_whitelist_redis_prefix};
+  my $redis_server = $conf->{auto_whitelist_redis_server};
+  my $password = $conf->{auto_whitelist_redis_password};
+  my $database = $conf->{auto_whitelist_redis_database};
+  my $debug = $conf->{auto_whitelist_redis_debug};
+
+  untaint_var( \$redis_server );
 
   my $self = {
     'main' => $main,
-    'redis' => Redis->new(
-      server => defined $redis_server ?
-        untaint_var($redis_server) : '127.0.0.1:6379',
-    ),
     'prefix' => defined $prefix ? $prefix : 'awl_',
   };
+
+  Mail::SpamAssassin::Plugin::info('initializing connection to redis server...');
+  eval {
+    $self->{'redis'} = Redis->new(
+      server => defined $redis_server ?
+        $redis_server : '127.0.0.1:6379',
+      debug => $debug,
+      defined $password ? ( password => $password ) : (),
+    );
+  };
+  if( $@ ) {
+    die('could not connect to redis: '.$@);
+  }
+
+  if( $database ) {
+    Mail::SpamAssassin::Plugin::info("selecting redis database $database...");
+    $self->{'redis'}->select($database);
+  }
 
   bless ($self, $class);
   return $self;
