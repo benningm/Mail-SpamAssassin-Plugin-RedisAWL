@@ -31,17 +31,19 @@ sub new_checker {
   my ($factory, $main) = @_;
   my $class = $factory->{class};
   my $conf = $main->{conf};
-  my $prefix = $conf->{auto_whitelist_redis_prefix};
+  my $prefix = $conf->{auto_whitelist_redis_prefix} || 'awl_';
   my $redis_server = $conf->{auto_whitelist_redis_server};
   my $password = $conf->{auto_whitelist_redis_password};
   my $database = $conf->{auto_whitelist_redis_database};
+  my $expire = $conf->{auto_whitelist_redis_expire} || 0;
   my $debug = $conf->{auto_whitelist_redis_debug};
 
   untaint_var( \$redis_server );
 
   my $self = {
     'main' => $main,
-    'prefix' => defined $prefix ? $prefix : 'awl_',
+    'prefix' => $prefix,
+    'expire' => $expire,
   };
 
   Mail::SpamAssassin::Plugin::info('initializing connection to redis server...');
@@ -94,6 +96,17 @@ sub get_addr_entry {
   return $entry;
 }
 
+sub _update_addr_expire {
+  my ($self, $addr) = @_;
+  my $expire = $self->{'expire'};
+  return unless $expire;
+
+  $self->{'redis'}->expire($self->{'prefix'}.$addr.'_count', $expire, sub {});
+  $self->{'redis'}->expire($self->{'prefix'}.$addr.'_score', $expire, sub {});
+
+  return;
+}
+
 sub add_score {
     my($self, $entry, $score) = @_;
 
@@ -107,6 +120,8 @@ sub add_score {
 
     $self->{'redis'}->incr( $self->{'prefix'}.$entry->{'addr'}.'_count' );
     $self->{'redis'}->incrby( $self->{'prefix'}.$entry->{'addr'}.'_score', int($score * 1000) );
+    $self->_update_addr_expire($addr);
+
     return $entry;
 }
 
