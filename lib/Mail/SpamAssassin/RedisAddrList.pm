@@ -120,7 +120,7 @@ sub add_score {
 
     $self->{'redis'}->incr( $self->{'prefix'}.$entry->{'addr'}.'_count' );
     $self->{'redis'}->incrby( $self->{'prefix'}.$entry->{'addr'}.'_score', int($score * 1000) );
-    $self->_update_addr_expire($addr);
+    $self->_update_addr_expire($entry->{addr});
 
     return $entry;
 }
