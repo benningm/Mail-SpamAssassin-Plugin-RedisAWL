@@ -118,7 +118,7 @@ sub remove_entry {
 	  $self->{'prefix'}.$addr.'_count',
 	  $self->{'prefix'}.$addr.'_score' );
 
-  if ( my $mailaddr = ($addr) =~ /^(.*)\|ip=none$/) {
+  if ( my ($mailaddr) = ($addr) =~ /^(.*)\|ip=none$/) {
     # it doesn't have an IP attached.
     # try to delete any per-IP entries for this addr as well.
     # could be slow...
