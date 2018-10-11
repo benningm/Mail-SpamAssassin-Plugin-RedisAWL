@@ -74,7 +74,7 @@ Timeout must be set in seconds.
 
 An entries expiration timeout will be updated whenever a new score is applied to it.
 
-=head2 timing_redis_debug (default: 0)
+=head2 auto_whitelist_redis_debug (default: 0)
 
 Turn on/off debug on the Redis connection.
 
