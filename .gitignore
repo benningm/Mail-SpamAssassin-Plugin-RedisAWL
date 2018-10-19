@@ -1,2 +1,4 @@
 Mail-SpamAssassin-Plugin-RedisAWL-*
 .build
+local
+cpanfile.snapshot
