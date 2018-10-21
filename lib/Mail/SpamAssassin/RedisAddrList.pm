@@ -138,9 +138,10 @@ sub remove_entry {
     # try to delete any per-IP entries for this addr as well.
     # could be slow...
 
-    $mailaddr =~ s/\*//g;
-    my @keys = $self->{'redis'}->keys($self->{'prefix'}.$mailaddr.'*');
-    $self->{'redis'}->del( @keys );
+    # make sure wildcard characters are escaped
+    $mailaddr =~ s/([\*\[\]\?])/\\$1/g;
+    my @keys = $self->{'redis'}->keys($self->{'prefix'}.$mailaddr.'|ip=*');
+    $self->{'redis'}->del( @keys ) if @keys;
   }
 
   return;
