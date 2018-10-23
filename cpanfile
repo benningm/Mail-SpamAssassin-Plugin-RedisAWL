@@ -2,6 +2,9 @@
 
 requires 'perl', '5.8.5';
 
+requires 'strict';
+requires 'vars';
+requires 'warnings';
 requires 'Mail::SpamAssassin::Logger';
 requires 'Mail::SpamAssassin::PersistentAddrList';
 requires 'Mail::SpamAssassin::Plugin';
